@@ -1,0 +1,51 @@
+library(readxl)
+baseenemdu <- read_excel("C:/Users/mauricio.carrion/Dropbox/PC/Downloads/baseenemdu.xlsx")
+View(baseenemdu)
+
+### Sobre “baseenemdu.xlsx”, genere una muestra de entrenamiento (train 70%) y validación aleatoria (test 30%). Utilice una semilla para asegurar que sus resultados sean replicables.#
+# Obtiene el número total de filas en el conjunto de datos
+n <- nrow(baseenemdu)
+
+# Calcula el tamaño de la muestra de entrenamiento y validación
+train_size <- 0.7 * n
+test_size <- n - train_size
+
+# Establece la semilla para asegurar la replicabilidad de los resultados
+set.seed(123)
+
+# Obtiene las filas de la muestra de entrenamiento y validación
+train_indices <- sample(1:n, size = train_size, replace = FALSE)
+test_indices <- setdiff(1:n, train_indices)
+
+# Obtiene las observaciones de la muestra de entrenamiento y validación
+train <- baseenemdu[train_indices, ]
+test <- baseenemdu[test_indices, ]
+
+
+
+#VALORES ATIPICOS#
+
+# Se Define una función para detectar valores atípicos utilizando el test de Tukey
+identify_outliers <- function(x) {
+  iqr <- IQR(x)
+  low_limit <- quantile(x, 0.25) - 1.5 * iqr
+  high_limit <- quantile(x, 0.75) + 1.5 * iqr
+  outliers <- x[x < low_limit | x > high_limit]
+  return(outliers)
+}
+
+# Se Crea una lista con los nombres de todas las variables del conjunto de datos
+variables <- names(baseenemdu)
+
+# Se Itera por cada variable y detecta los valores atípicos
+for (i in variables) {
+  print(paste("Variable:", i))
+  print(identify_outliers(baseenemdu[[i]]))
+}
+
+
+######distribucion de cada variable#####
+# Se Itera por cada variable y crea un histograma para visualizar la distribucion##
+for (i in variables) {
+  print(paste("Variable:", i))
+  hist(baseenemdu[[i]], main = i)
